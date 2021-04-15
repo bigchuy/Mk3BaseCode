@@ -25,19 +25,26 @@ import org.frcteam2910.common.util.HolonomicDriveSignal;
 
 
 public class DrivetrainSubsystem implements Subsystem, UpdateManager.Updatable {
-    public static final double TRACKWIDTH = 1.0;
+    /*
+           (1)
+            @
+           / \
+          /   \
+         @-----@
+        (2)    (3)
+    */
+
     public static final double WHEELBASE = 1.0;
     public static final double STEER_GEAR_RATIO = 12.8;
     public static final double DRIVE_GEAR_RATIO = 6.86;
 
+    Vector2 vectorOne   = new Vector2(WHEELBASE / 2.0, 0);
+    Vector2 vectorTwo   = new Vector2(WHEELBASE / 2.0, WHEELBASE / 2.0);
+    Vector2 vectorThree = new Vector2(WHEELBASE / 2.0, WHEELBASE / 2.0);
+
     private final Mk3SwerveModule[] modules;
 
-    private final SwerveKinematics swerveKinematics = new SwerveKinematics(
-            new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0),         // Front left
-            new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0),        // Front right
-            new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),        // Back left
-            new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0)        // Back right
-    );
+    private final SwerveKinematics swerveKinematics = new SwerveKinematics(vectorOne, vectorTwo, vectorThree);
 
     private final Object sensorLock = new Object();
     @GuardedBy("sensorLock")
@@ -65,55 +72,44 @@ public class DrivetrainSubsystem implements Subsystem, UpdateManager.Updatable {
             gyroscope.setInverted(false);
         }
 
-        TalonFX frontLeftSteeringMotor = new TalonFX(Constants.DRIVETRAIN_FRONT_LEFT_ANGLE_MOTOR);
-        TalonFX backLeftSteeringMotor = new TalonFX(Constants.DRIVETRAIN_BACK_LEFT_ANGLE_MOTOR);
+        TalonFX steeringMotorOne   = new TalonFX(Constants.DRIVETRAIN_ANGLE_MOTOR_ONE);
+        TalonFX steeringMotorTwo   = new TalonFX(Constants.DRIVETRAIN_ANGLE_MOTOR_TWO);
+        TalonFX steeringMotorThree = new TalonFX(Constants.DRIVETRAIN_ANGLE_MOTOR_THREE);
 
-        TalonFX frontLeftDriveMotor = new TalonFX(Constants.DRIVETRAIN_FRONT_LEFT_DRIVE_MOTOR);
-        TalonFX frontRightDriveMotor = new TalonFX(Constants.DRIVETRAIN_FRONT_RIGHT_DRIVE_MOTOR);
-        TalonFX backLeftDriveMotor = new TalonFX(Constants.DRIVETRAIN_BACK_LEFT_DRIVE_MOTOR);
-        TalonFX backRightDriveMotor = new TalonFX(Constants.DRIVETRAIN_BACK_RIGHT_DRIVE_MOTOR);
-        frontRightDriveMotor.setInverted(true);
-        backRightDriveMotor.setInverted(true);
+        TalonFX driveMotorOne   = new TalonFX(Constants.DRIVETRAIN_DRIVE_MOTOR_ONE);
+        TalonFX driveMotorTwo   = new TalonFX(Constants.DRIVETRAIN_DRIVE_MOTOR_TWO);
+        TalonFX driveMotorThree = new TalonFX(Constants.DRIVETRAIN_DRIVE_MOTOR_THREE);
 
         // Limit speed (testing only)
-        configTalon(frontLeftDriveMotor);
-        configTalon(frontRightDriveMotor);
-        configTalon(backLeftDriveMotor);
-        configTalon(backRightDriveMotor);
+        configTalon(driveMotorOne);
+        configTalon(driveMotorTwo);
+        configTalon(driveMotorThree);
 
-        Mk3SwerveModule frontLeftModule = new Mk3SwerveModule(new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0),
-                Constants.DRIVETRAIN_FRONT_LEFT_ENCODER_OFFSET,
+        Mk3SwerveModule moduleOne = new Mk3SwerveModule(vectorOne,
+                Constants.DRIVETRAIN_ENCODER_OFFSET_ONE,
                 STEER_GEAR_RATIO,
                 DRIVE_GEAR_RATIO,
-                frontLeftSteeringMotor,
-                frontLeftDriveMotor,
-                new CANCoder(Constants.DRIVETRAIN_FRONT_LEFT_ENCODER_PORT));
+                steeringMotorOne,
+                driveMotorOne,
+                new CANCoder(Constants.DRIVETRAIN_ENCODER_PORT_ONE));
 
-        Mk3SwerveModule frontRightModule = new Mk3SwerveModule(new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0),
-                Constants.DRIVETRAIN_FRONT_RIGHT_ENCODER_OFFSET,
+        Mk3SwerveModule moduleTwo = new Mk3SwerveModule(vectorTwo,
+                Constants.DRIVETRAIN_ENCODER_OFFSET_TWO,
                 STEER_GEAR_RATIO,
                 DRIVE_GEAR_RATIO,
-                new TalonFX(Constants.DRIVETRAIN_FRONT_RIGHT_ANGLE_MOTOR),
-                frontRightDriveMotor,
-                new CANCoder(Constants.DRIVETRAIN_FRONT_RIGHT_ENCODER_PORT));
+                steeringMotorTwo,
+                driveMotorTwo,
+                new CANCoder(Constants.DRIVETRAIN_ENCODER_PORT_TWO));
 
-        Mk3SwerveModule backLeftModule = new Mk3SwerveModule(new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),
-                Constants.DRIVETRAIN_BACK_LEFT_ENCODER_OFFSET,
+        Mk3SwerveModule moduleThree = new Mk3SwerveModule(vectorThree,
+                Constants.DRIVETRAIN_ENCODER_OFFSET_THREE,
                 STEER_GEAR_RATIO,
                 DRIVE_GEAR_RATIO,
-                backLeftSteeringMotor,
-                backLeftDriveMotor,
-                new CANCoder(Constants.DRIVETRAIN_BACK_LEFT_ENCODER_PORT));
+                steeringMotorThree,
+                driveMotorThree,
+                new CANCoder(Constants.DRIVETRAIN_ENCODER_PORT_THREE));
 
-        Mk3SwerveModule backRightModule = new Mk3SwerveModule(new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0),
-                Constants.DRIVETRAIN_BACK_RIGHT_ENCODER_OFFSET,
-                STEER_GEAR_RATIO,
-                DRIVE_GEAR_RATIO,
-                new TalonFX(Constants.DRIVETRAIN_BACK_RIGHT_ANGLE_MOTOR),
-                backRightDriveMotor,
-                new CANCoder(Constants.DRIVETRAIN_BACK_RIGHT_ENCODER_PORT));
-
-        modules = new Mk3SwerveModule[] {frontLeftModule, frontRightModule, backLeftModule, backRightModule};
+        modules = new Mk3SwerveModule[] {moduleOne, moduleTwo, moduleThree};
 
         moduleAngleEntries = new NetworkTableEntry[modules.length];
 
@@ -132,10 +128,9 @@ public class DrivetrainSubsystem implements Subsystem, UpdateManager.Updatable {
                 .getEntry();
 
         ShuffleboardLayout[] moduleLayouts = {
-                tab.getLayout("Front Left Module", BuiltInLayouts.kList),
-                tab.getLayout("Front Right Module", BuiltInLayouts.kList),
-                tab.getLayout("Back Left Module", BuiltInLayouts.kList),
-                tab.getLayout("Back Right Module", BuiltInLayouts.kList)
+                tab.getLayout("Module One", BuiltInLayouts.kList),
+                tab.getLayout("Module Two", BuiltInLayouts.kList),
+                tab.getLayout("Module Three", BuiltInLayouts.kList)
         };
         for (int i = 0; i < modules.length; i++) {
             ShuffleboardLayout layout = moduleLayouts[i]
