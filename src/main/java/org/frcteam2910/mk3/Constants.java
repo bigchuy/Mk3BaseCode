@@ -16,9 +16,14 @@ public class Constants {
     public static final int PIGEON_PORT = 8;
 
     // In degrees
-    public static final double DRIVETRAIN_ENCODER_OFFSET_ONE   = Math.toRadians(0.0);
-    public static final double DRIVETRAIN_ENCODER_OFFSET_TWO   = Math.toRadians(0.0);
-    public static final double DRIVETRAIN_ENCODER_OFFSET_THREE = Math.toRadians(0.0);
+   // public static final double DRIVETRAIN_ENCODER_OFFSET_ONE   = Math.toRadians(121.3742);
+   // public static final double DRIVETRAIN_ENCODER_OFFSET_TWO   = Math.toRadians(335.3165);
+    //public static final double DRIVETRAIN_ENCODER_OFFSET_THREE = Math.toRadians(357.8851);
+
+    public static final double DRIVETRAIN_ENCODER_OFFSET_ONE   = Math.toRadians(359.568787);
+    public static final double DRIVETRAIN_ENCODER_OFFSET_TWO   = Math.toRadians(178.593750);
+    public static final double DRIVETRAIN_ENCODER_OFFSET_THREE = Math.toRadians(359.986267);
+
 
     public static final int PRIMARY_CONTROLLER_PORT = 0;
 }

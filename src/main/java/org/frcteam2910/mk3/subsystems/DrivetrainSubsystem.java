@@ -75,6 +75,7 @@ public class DrivetrainSubsystem implements Subsystem, UpdateManager.Updatable {
         TalonFX steeringMotorOne   = new TalonFX(Constants.DRIVETRAIN_ANGLE_MOTOR_ONE);
         TalonFX steeringMotorTwo   = new TalonFX(Constants.DRIVETRAIN_ANGLE_MOTOR_TWO);
         TalonFX steeringMotorThree = new TalonFX(Constants.DRIVETRAIN_ANGLE_MOTOR_THREE);
+        
 
         TalonFX driveMotorOne   = new TalonFX(Constants.DRIVETRAIN_DRIVE_MOTOR_ONE);
         TalonFX driveMotorTwo   = new TalonFX(Constants.DRIVETRAIN_DRIVE_MOTOR_TWO);

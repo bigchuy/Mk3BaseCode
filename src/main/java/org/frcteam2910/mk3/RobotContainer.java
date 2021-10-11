@@ -13,9 +13,10 @@ public class RobotContainer {
     private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
 
     public RobotContainer() {
-        primaryController.getLeftXAxis().setInverted(true);
-        primaryController.getRightXAxis().setInverted(true);
+        //primaryController.getLeftXAxis().setInverted(true);
+        //primaryController.getRightXAxis().setInverted(true);
 
+        //                                                                                                          Left Y Axis            Left X Axis           Right X Axis
         CommandScheduler.getInstance().setDefaultCommand(drivetrainSubsystem, new DriveCommand(drivetrainSubsystem, getDriveForwardAxis(), getDriveStrafeAxis(), getDriveRotationAxis()));
 
         configureButtonBindings();

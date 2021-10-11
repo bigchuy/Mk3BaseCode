@@ -39,6 +39,8 @@ deploy {
 dependencies {
     compileOnly group: "com.google.errorprone", name: "error_prone_annotations", version: "2.3.4"
 
+    compile project(':common:robot');
+    
     implementation wpi.deps.wpilib()
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
